@@ -1,0 +1,20 @@
+﻿@model RealMusic.Dto.AlbumInfoListDto
+
+@foreach (var item in Model.Albums)
+{
+    <div class="menu-slider-entry">
+        <div class="product-slide-entry">
+            <div class="product-image">
+                <img src="@item.ImagePath" alt="" height="150" width="150" style="width: 150px; height: 150px;" />
+                <a class="top-line-a right open-product" data-id="product_@item.ItemId"><i class="fa fa-expand"></i> <span>Xem album</span></a>
+                <div class="bottom-line">
+                    <a class="bottom-line-a" href="@Url.RouteUrl(OrderControllerRoute.GetCreate, new {albumId = item.ItemId, quantity = 1})"><i class="fa fa-shopping-cart"></i> Đặt hàng</a>
+                </div>
+            </div>
+            <a class="title open-product" data-id="product_@item.ItemId">@item.Name</a>
+            <div class="price">
+                <div class="current">@item.Price.ToString("N0") VNĐ</div>
+            </div>
+        </div>
+    </div>
+}

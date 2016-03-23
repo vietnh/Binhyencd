@@ -1,0 +1,334 @@
+﻿@using System.Threading.Tasks
+@using RealMusic.Dto
+@using RealMusic.Utils
+@inject IOptions<AppSettings> AppSettings
+@inject IHostingEnvironment HostingEnvironment
+<!DOCTYPE html>
+@* lang - The language of the page. *@
+@* no-js - The no JavaScript class is removed by modernizr if JavaScript is available. *@
+<html class="no-js" lang="en">
+<head asp-open-graph-prefix="true">
+    @* The order of the tags in the head is important for best performance and compatibility. *@
+    @* charset - The character encoding of the document. *@
+    <meta charset="utf-8">
+    @* viewport - Set the scale on mobile devices (For more info see https://developer.mozilla.org/en/docs/Mozilla/Mobile/Viewport_meta_tag). *@
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @* title - The title of the page which appears in the browser window title. Aim for the title to be less than 70
+        characters. The site name appears at the end for better SEO. *@
+    <title>Âm nhạc thực sự - @AppSettings.Value.SiteTitle</title>
+
+
+    @* Icons & Platform Specific Settings (See http://rehansaeed.com/internet-favicon-madness/ for detailed
+        information). The order of these icons is very important. *@
+
+    @* favicon-16x16.png - The classic favicon, displayed in the tabs. *@
+    <link rel="icon" type="image/png" href="/img/icons/favicon-16x16.png" sizes="16x16">
+
+    @* Windows 7 Taskbar - This depends on your site, so no code here. See http://www.buildmypinnedsite.com/windows7 *@
+
+
+    @* Move site.css to a content delivery network (CDN) for better performance. *@
+    <link asp-append-version="true" rel="stylesheet" href="~/css/idangerous.swiper.css" />
+    <link asp-append-version="true" rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="@ContentDeliveryNetwork.Google.Font" />
+
+    <meta name="x-font-awesome-stylesheet-fallback-test" class="fa">
+    <environment names="@RealMusic.Constants.EnvironmentName.Development">
+        <link asp-append-version="true" rel="stylesheet" href="~/css/font-awesome.css" />
+    </environment>
+    <environment names="@RealMusic.Constants.EnvironmentName.Staging,@RealMusic.Constants.EnvironmentName.Production">
+        <link rel="stylesheet" href="@ContentDeliveryNetwork.MaxCdn.FontAwesomeUrl" />
+    </environment>
+    <environment names="@RealMusic.Constants.EnvironmentName.Development">
+        <script asp-append-version="true" src="~/js/modernizr.js"></script>
+    </environment>
+    <environment names="@RealMusic.Constants.EnvironmentName.Staging,@RealMusic.Constants.EnvironmentName.Production">
+        <script src="@ContentDeliveryNetwork.Microsoft.ModernizrUrl"></script>
+    </environment>
+
+
+    @* Description - Used by search engines. Aim for more than 160 characters. *@
+    <meta name="description" content="@ViewBag.Description">
+
+
+    @* Canonical - The URL of the current page. Stops case differences and http/https being treated as different URL's
+        by search engines. The settings in this project should make this redundant, unless you are mixing HTTP and
+        HTTPS or you have multiple URL's to the same resource which you should avoid.
+        (See http://googlewebmastercentral.blogspot.co.uk/2009/02/specify-your-canonical.html). *@
+    @*<link rel="canonical" href="">*@
+
+
+    @* You can use the head section to render additional meta tags. *@
+    @RenderSection("head", required: false)
+</head>
+<body class="style-2">
+    <!-- LOADER -->
+    <div id="loader-wrapper">
+        <div class="bubbles">
+            <div class="title">loading</div>
+            <span></span>
+            <span id="bubble2"></span>
+            <span id="bubble3"></span>
+        </div>
+    </div>
+
+    @{
+        var cartSession = Context.Session.GetObjectFromJson<OrderDto>("Cart") ?? new OrderDto();
+    }
+
+    <div id="content-block">
+        <div class="content-center fixed-header-margin">
+            <!-- HEADER -->
+            <div class="header-wrapper style-2">
+                <header class="type-1">
+                    <div class="header-top">
+                        <div class="menu-button responsive-menu-toggle-class">
+                            <i class="fa fa-reorder"></i>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+                    <div class="header-middle">
+                        <div class="logo-wrapper">
+                            <a id="logo" href="@Url.RouteUrl(HomeControllerRoute.GetIndex)"><img src="/img/logo-3.png" alt="" /></a>
+                        </div>
+
+                        <div class="middle-entry">
+                            <a class="icon-entry" href="#">
+                                <span class="image">
+                                    <i class="fa fa-phone"></i>
+                                </span>
+                                <span class="text">
+                                    <b>Điện thoại</b> <br /> Hàn: (+84)904862828
+                                </span>
+                            </a>
+                            <a class="icon-entry" href="#">
+                                <span class="image">
+                                    <i class="fa fa-envelope"></i>
+                                </span>
+                                <span class="text">
+                                    <b>Email</b> <br /> nhieuhan90@gmail.com
+                                </span>
+                            </a>
+                        </div>
+
+                        <div class="right-entries">
+                            <a class="header-functionality-entry open-search-popup" href="#"><i class="fa fa-search"></i><span>Tìm kiếm</span></a>
+                            <a class="header-functionality-entry open-cart-popup" style="padding-right: 0; border-right: none;">
+                                <i class="fa fa-shopping-cart"></i><span>Giỏ hàng</span>
+                                <b id="layout-my-cart-total">
+                                    @if (cartSession.TotalPrice != 0)
+                                    {
+                                        @cartSession.TotalPrice.ToString("N0") @:VNĐ
+                                    }
+                                </b>
+                            </a>
+                            <div class="cart-box popup">
+                                <div class="popup-container" id="cart-popup">
+                                    @await Component.InvokeAsync("MyCart", cartSession)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="close-header-layer"></div>
+                    <div class="navigation">
+                        <div class="navigation-header responsive-menu-toggle-class">
+                            <div class="title">Navigation</div>
+                            <div class="close-menu"></div>
+                        </div>
+                        <div class="nav-overflow">
+                            @*<div class="sidebar-navigation-title">product categories</div>*@
+                            <div class="navigation-search-content">
+                                <div class="toggle-desktop-menu"><i class="fa fa-bars"></i><i class="fa fa-close"></i>
+                                </div>
+                                <div class="search-box size-1">
+                                    <div class="search-button">
+                                        <i class="fa fa-search" onclick="search();"></i>
+                                    </div>
+                                    <div class="search-drop-down">
+                                        <div class="title">
+                                            <span>CD/DVD</span><i class="fa fa-angle-down"></i>
+                                        </div>
+                                        <div class="list">
+                                            <div class="overflow">
+                                                <div class="category-entry" onclick="changeSeachType('@SearchType.Album');">CD/DVD</div>
+                                                <div class="category-entry" onclick="changeSeachType('@SearchType.SingerOrActor');">Ca sĩ/Diễn viên</div>
+                                                <div class="category-entry" onclick="changeSeachType('@SearchType.Director');">Nhạc sĩ/Đạo diễn</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="searchType" value="@SearchType.Album"/>
+                                    <input type="hidden" name="page" value="1"/>
+                                    <div class="search-field">
+                                        <input type="text" name="query" value="" placeholder="Tìm kiếm CD/DVD"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <nav>
+                                <ul>
+                                    <li class="simple-list">
+                                        <a href="@Url.RouteUrl(HomeControllerRoute.GetIndex)"><i class="fa fa-lg fa-home"></i> Trang chủ</a>
+                                    </li>
+                                    <li class="full-width">
+                                        <a href="#" class="active">Home</a><i class="fa fa-chevron-down"></i>
+                                        <div class="submenu">
+                                            <div class="full-width-menu-items-right">
+                                                <div class="menu-slider-arrows">
+                                                    <a class="left"><i class="fa fa-chevron-left"></i></a>
+                                                    <a class="right"><i class="fa fa-chevron-right"></i></a>
+                                                </div>
+                                                <div class="submenu-list-title"><a href="#">Đĩa bán chạy</a><span class="toggle-list-button"></span></div>
+                                                <div class="menu-slider-out">
+                                                    <div class="menu-slider-in">
+                                                        @await Component.InvokeAsync("MenuAlbum", 12)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="full-width-menu-items-left">
+                                                @await Component.InvokeAsync("MenuCategory")
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="fixed-header-visible">
+                                        <a class="fixed-header-square-button open-cart-popup"><i class="fa fa-shopping-cart"></i></a>
+                                        <a class="fixed-header-square-button open-search-popup"><i class="fa fa-search"></i></a>
+                                    </li>
+                                </ul>
+
+                                <div class="clear"></div>
+
+                                <a class="fixed-header-visible additional-header-logo"><img src="/img/logo-3.png" alt="" /></a>
+                            </nav>
+                            <div class="navigation-footer responsive-menu-toggle-class">
+                                <div class="navigation-copyright">
+                                    Created by <a href="#">vietnh</a>.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <div class="clear"></div>
+            </div>
+
+            <div class="content-push">
+                <!--[if lt IE 8]>
+                    <div class="alert alert-warning" role="alert">
+                        <p>You are using an outdated browser. Please <a class="alert-link" href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+                    </div>
+                <![endif]-->
+                @RenderBody()
+
+                <!-- FOOTER -->
+                <div class="footer-wrapper style-17">
+                    <footer class="type-1">
+                        <hr />
+                        <div class="footer-bottom-navigation">
+                            <div class="cell-view">
+                                <div class="footer-links">
+                                    <a href="#">Site Map</a>
+                                    <a href="#">Search</a>
+                                    <a href="#">Terms</a>
+                                    <a href="#">Advanced Search</a>
+                                    <a href="#">Orders and Returns</a>
+                                    <a href="#">Contact Us</a>
+                                </div>
+                                <div class="copyright">
+                                    Created by <a href="#">vietnh</a>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    @*<div class="search-box popup">
+        <form>
+            <div class="search-button">
+                <i class="fa fa-search"></i>
+                <input type="submit" />
+            </div>
+            <div class="search-drop-down">
+                <div class="title">
+                    <span>All categories</span><i class="fa fa-angle-down"></i>
+                </div>
+                <div class="list">
+                    <div class="overflow">
+                        <div class="category-entry">Category 1</div>
+                        <div class="category-entry">Category 2</div>
+                        <div class="category-entry">Category 2</div>
+                        <div class="category-entry">Category 4</div>
+                        <div class="category-entry">Category 5</div>
+                        <div class="category-entry">Lorem</div>
+                        <div class="category-entry">Ipsum</div>
+                        <div class="category-entry">Dollor</div>
+                        <div class="category-entry">Sit Amet</div>
+                    </div>
+                </div>
+            </div>
+            <div class="search-field">
+                <input type="text" value="" placeholder="Search for product" />
+            </div>
+        </form>
+    </div>*@
+
+    <div id="product-popup" class="overlay-popup">
+        <div class="overflow">
+            <div class="table-view">
+                <div class="cell-view">
+                    <div class="close-layer"></div>
+                    <div class="popup-container">
+                        <div id="product-content"></div>
+                        <div class="close-popup"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <environment names="@RealMusic.Constants.EnvironmentName.Development">
+        <script asp-append-version="true" src="~/js/jquery.js"></script>
+        <script asp-append-version="true" src="~/js/jquery-validate.js"></script>
+        <script asp-append-version="true" src="~/js/jquery-validate-unobtrusive.js"></script>
+        <script asp-append-version="true" src="~/js/bootstrap.js"></script>
+    </environment>
+    <environment names="@RealMusic.Constants.EnvironmentName.Staging,@RealMusic.Constants.EnvironmentName.Production">
+        <script src="@ContentDeliveryNetwork.Google.JQueryUrl"></script>
+        <script src="@ContentDeliveryNetwork.Microsoft.JQueryValidateUrl"></script>
+        <script src="@ContentDeliveryNetwork.Microsoft.JQueryValidateUnobtrusiveUrl"></script>
+        <script src="@ContentDeliveryNetwork.Microsoft.BootstrapUrl"></script>
+        @* Move site.js to a content delivery network (CDN) for better performance. *@
+    </environment>
+
+    <script src="~/js/idangerous.swiper.js"></script>
+    <script src="~/js/global.js"></script>
+
+    <!-- custom scrollbar -->
+    <script src="~/js/jquery.mousewheel.js"></script>
+    <script src="~/js/jquery.jscrollpane.js"></script>
+
+    <script>
+        function changeSeachType(type) {
+            $('input[name="searchType"]').val(type);
+        }
+
+        function search() {
+            var query = $('input[name="query"]').val();
+            var searchType = $('input[name="searchType"]').val();
+
+            if (query)
+                location.href = '/album/search/' + searchType + '/' + query;
+        }
+
+        $(document).ready(function() {
+            $('input[name="query"]').onEnter(search);
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

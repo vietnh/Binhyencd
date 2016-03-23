@@ -1,0 +1,188 @@
+﻿@model RealMusic.Dto.AlbumDto
+
+<div class="breadcrumb-box">
+    <a href="@Url.RouteUrl(HomeControllerRoute.GetIndex)">Trang chủ</a>
+    <a>Tạo đĩa</a>
+</div>
+
+<div class="information-blocks">
+    <form asp-controller="Album" asp-action="Create" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="ItemId" value="@Model.ItemId" />
+        <div class="row">
+            <div class="col-sm-12">
+                <label>Tên đĩa<span>*</span></label>
+                <input asp-for="Name" class="simple-field" autofocus required/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <label>Thể loại<span>*</span></label>
+                <div class="simple-drop-down simple-field">
+                    <select name="CategoryType" id="category_type" required>
+                        @foreach (var categoryType in Model.CategoryTypes)
+                        {
+                            <option value="@categoryType.Id" selected="@(categoryType.Id == (int)Model.CategoryType)">@categoryType.Name</option>
+                        }
+                    </select>
+                </div>
+                <span asp-validation-for="CategoryType" class="text-danger"></span>
+            </div>
+            <div class="col-sm-4">
+                <label>Chất lượng<span>*</span></label>
+                <div class="simple-drop-down simple-field">
+                    <select name="DiscType" required>
+                        @foreach (var discType in Model.DiscTypes)
+                        {
+                            <option value="@discType.Id" selected="@(discType.Id == (int)Model.DiscType)">@discType.Name</option>
+                        }
+                    </select>
+                </div>
+                <span asp-validation-for="DiscType" class="text-danger"></span>
+            </div>
+            <div class="col-sm-4">
+                <label>Giá bán<span>*</span></label>
+                <input type="number" name="Price" class="simple-field" placeholder="VNĐ" value="@Model.Price" required/>
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row" id="music_categories">
+            @{ var halfMusicCategoryCount = (int) Math.Round((double) Model.MusicCategories.Count/2, MidpointRounding.AwayFromZero); }
+            <div class="col-sm-4">
+                @for (var i = 0; i < halfMusicCategoryCount; i++)
+                {
+                    <label class="checkbox-entry">
+                        <input type="hidden" name="MusicCategories[@i].Id" value="@Model.MusicCategories[i].Id"/>
+                        <input asp-for="MusicCategories[i].IsChecked"> <span class="check"></span> @Model.MusicCategories[i].Name
+                    </label>
+                }
+                <div class="clear"></div>
+            </div>
+            <div class="col-sm-4">
+                @for (var i = halfMusicCategoryCount; i < Model.MusicCategories.Count; i++)
+                {
+                    <label class="checkbox-entry">
+                        <input type="hidden" name="MusicCategories[@i].Id" value="@Model.MusicCategories[i].Id"/>
+                        <input asp-for="MusicCategories[i].IsChecked"> <span class="check"></span> @Model.MusicCategories[i].Name
+                    </label>
+                }
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="row" id="film_categories">
+            @{ var halfFilmCategoryCount = (int) Math.Round((double) Model.FilmCategories.Count/2, MidpointRounding.AwayFromZero); }
+            <div class="col-sm-4">
+                @for (var i = 0; i < halfFilmCategoryCount; i++)
+                {
+                    <label class="checkbox-entry">
+                        <input type="hidden" name="FilmCategories[@i].Id" value="@Model.FilmCategories[i].Id"/>
+                        <input asp-for="FilmCategories[i].IsChecked"> <span class="check"></span> @Model.FilmCategories[i].Name
+                    </label>
+                }
+                <div class="clear"></div>
+            </div>
+            <div class="col-sm-4">
+                @for (var i = halfFilmCategoryCount; i < Model.FilmCategories.Count; i++)
+                {
+                    <label class="checkbox-entry">
+                        <input type="hidden" name="FilmCategories[@i].Id" value="@Model.FilmCategories[i].Id"/>
+                        <input asp-for="FilmCategories[i].IsChecked"> <span class="check"></span> @Model.FilmCategories[i].Name
+                    </label>
+                }
+                <div class="clear"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <label>Ảnh mặt trước<span>*</span></label>
+                <div class="search-button">
+                    <a onclick="$('input[id=file]').click();"><i class="fa fa-upload"></i></a>
+                </div>
+                <div class="search-field" style="margin-right: 0; margin-bottom: 25px;">
+                    <input type="text" class="search-field" id="photoCover" value="@Model.ImagePath" style="width: 60%;" required/>
+                </div>
+                <input id="file" type="file" name="files" style="display: none">
+                <div class="clear"></div>
+            </div>
+
+            <div class="col-sm-6">
+                <label>Ảnh mặt sau (nếu có)</label>
+                <div class="search-button">
+                    <a onclick="$('input[id=backFile]').click();"><i class="fa fa-upload"></i></a>
+                </div>
+                <div class="search-field" style="margin-right: 0; margin-bottom: 25px;">
+                    <input type="text" class="search-field" id="backPhotoCover" value="@Model.BackImagePath" style="width: 60%;"/>
+                </div>
+                <input id="backFile" type="file" name="backFiles" style="display: none">
+                <div class="clear"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <label>Ca sĩ (diễn viên) <span>*</span></label>
+                <input asp-for="SingerOrActors" class="simple-field" placeholder="Bằng Kiều, Minh Tuyết" required/>
+                <span asp-validation-for="SingerOrActors" class="text-danger"></span>
+                <div class="clear"></div>
+            </div>
+
+            <div class="col-sm-6">
+                <label>Nhạc sĩ (đạo diễn)</label>
+                <input asp-for="Director" class="simple-field" placeholder=""/>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <label>Nội dung</label>
+                <textarea asp-for="Description" class="simple-field"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+                <div class="clear"></div>
+            </div>
+        </div>
+
+        <div class="button style-10">
+            Hoàn thành<input type="submit">
+        </div>
+    </form>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var categoryType = '@((int)Model.CategoryType)';
+            showCategoryListContent(categoryType);
+        });
+
+        $('input[id=file]').change(function () {
+            var fileName = $(this).val().match(/[^\/\\]*$/)[0];
+            $('#photoCover').val(fileName);
+        });
+
+        $('input[id=backFile]').change(function () {
+            var fileName = $(this).val().match(/[^\/\\]*$/)[0];
+            $('#backPhotoCover').val(fileName);
+        });
+
+        $('#category_type').change(function () {
+            showCategoryListContent($(this).val());
+        });
+
+        function showCategoryListContent(type) {
+            if (type === "0") {
+                $('#music_categories').show();
+                $('#film_categories').hide();
+            }
+            else {
+                $('#music_categories').hide();
+                $('#film_categories').show();
+            }
+        }
+    </script>
+}

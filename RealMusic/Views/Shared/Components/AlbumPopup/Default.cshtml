@@ -1,0 +1,120 @@
+﻿@model RealMusic.Dto.AlbumDto
+
+<div class="row">
+    <div class="col-sm-6 information-entry">
+        <div class="product-preview-box">
+            <div class="swiper-container product-preview-swiper" data-autoplay="0" data-loop="1" data-speed="500" data-center="0" data-slides-per-view="1">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="product-zoom-image">
+                            <img src="@Model.ImagePath" alt="" data-zoom="@Model.ImagePath" height="370" style="height: 370px;"/>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.BackImagePath))
+                    {
+                        <div class="swiper-slide">
+                            <div class="product-zoom-image">
+                                <img src="@Model.BackImagePath" alt="" data-zoom="@Model.BackImagePath" height="370" style="height: 370px;"/>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="pagination"></div>
+            </div>
+            <div class="swiper-hidden-edges">
+                <div class="swiper-container product-thumbnails-swiper" data-autoplay="0" data-loop="0" data-speed="500" data-center="0" data-slides-per-view="responsive" data-xs-slides="3" data-int-slides="3" data-sm-slides="3" data-md-slides="4" data-lg-slides="4" data-add-slides="4">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide selected">
+                            <div class="paddings-container">
+                                <img src="@Model.ImagePath" alt="" height="81" style="height: 81px;"/>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="paddings-container">
+                                <img src="@Model.BackImagePath" alt="" height="81" style="height: 81px;"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 information-entry">
+        <div class="product-detail-box">
+            <h1 class="product-title">@Model.Name</h1>
+            <h3 class="product-subtitle">@string.Join(", ", Model.Categories.Select(c => c.Name))</h3>
+            <div class="product-description detail-info-entry">
+                <div class="detail-info-entry-title" style="margin-bottom: 0;">Ca sĩ/Diễn viên</div>
+                <div class="entry">@(string.IsNullOrEmpty(Model.SingerOrActors) ? "N/A" : Model.SingerOrActors)</div>
+                <div class="detail-info-entry-title" style="margin-bottom: 0;">Nhạc sĩ/Đạo diễn</div>
+                <div class="entry">@(string.IsNullOrEmpty(Model.Director) ? "N/A" : Model.Director)</div>
+                <div class="detail-info-entry-title" style="margin-bottom: 0;">Nội dung</div>
+                <div style="white-space: pre-wrap;">@(string.IsNullOrEmpty(Model.Description) ? "N/A" : Model.Description)</div>
+            </div>
+            <div class="price detail-info-entry">
+                <div class="current">@Model.Price?.ToString("N0") VNĐ</div>
+            </div>
+            <div class="size-selector detail-info-entry">
+                <div class="detail-info-entry-title">Loại đĩa</div>
+                @{ var discType = Model.DiscTypes.Single(d => d.Id == (int) Model.DiscType); }
+                <div class="entry active" style="width: auto;"><span style="margin-left: 13px; margin-right: 13px;">@discType.Name</span></div>
+            </div>
+            <div class="quantity-selector detail-info-entry">
+                <div class="detail-info-entry-title">Số lượng</div>
+                <div class="entry number-minus" onclick="decreaseQuantity();">&nbsp;</div>
+                <div class="entry number" id="quantity">1</div>
+                <div class="entry number-plus" onclick="increaseQuantity();">&nbsp;</div>
+            </div>
+            <div class="detail-info-entry">
+                <a class="button style-10" onclick="createOrderInPopup()">Đặt mua</a>
+                <a class="button style-11" onClick="addToCartInPopup()"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ</a>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="order-success-message" style="display: none;">
+    <div class="message-box message-success">
+        <div class="message-icon"><i class="fa fa-check"></i></div>
+        <div class="message-text">Giỏ hàng đã được cập nhật</div>
+        <div class="message-close"><i class="fa fa-times"></i></div>
+    </div>
+</div>
+
+<script>
+    function decreaseQuantity() {
+        var quantity = +$('#quantity').text();
+        if (quantity > 1) quantity--;
+        $('#quantity').text(quantity);
+    }
+
+    function increaseQuantity() {
+        var quantity = +$('#quantity').text();
+        quantity++;
+        $('#quantity').text(quantity);
+    }
+
+    function createOrderInPopup() {
+        location.href = "/order/create/" + '@Model.ItemId' + '/' + $('#quantity').text();
+    }
+
+    function addToCartInPopup() {
+        var albumId = '@Model.ItemId';
+        var quantity = $('#quantity').text();
+
+        $.post('/order/addtocart/' + albumId + '/' + quantity)
+            .done(function(result) {
+                $('#cart-popup').html(result);
+                $('#layout-my-cart-total').text($('#my-cart-total').text());
+
+                $('#order-success-message').show();
+                setTimeout(function () {
+                    $('#order-success-message').fadeOut(1000);
+                }, 3000);
+
+            });
+    }
+</script>
+

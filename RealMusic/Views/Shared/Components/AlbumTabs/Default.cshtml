@@ -1,0 +1,31 @@
+﻿@model RealMusic.Dto.AlbumTabDto
+
+<div class="tabs-container">
+    <div class="swiper-tabs tabs-switch">
+        <div class="title">Products</div>
+        <div class="list">
+            <a class="block-title tab-switcher active">Mới phát hành</a>
+            <a class="block-title tab-switcher">Mua nhiều nhất</a>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div>
+        <div class="tabs-entry">
+            <div class="row shop-grid grid-view">
+                @foreach (var album in Model.New.Albums)
+                {
+                    @await Component.InvokeAsync("AlbumTile", album);
+                }
+            </div>
+        </div>
+        <div class="tabs-entry">
+            <div class="row shop-grid grid-view">
+                @foreach (var album in Model.BestSeller.Albums)
+                {
+                    @await Component.InvokeAsync("AlbumTile", album);
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

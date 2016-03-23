@@ -1,0 +1,84 @@
+﻿@model RealMusic.Dto.AlbumInfoListDto
+
+@section head
+{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/t/bs-3.3.6/dt-1.10.11/datatables.min.css" />
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-bordered table-hover" id="category-table">
+            <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Loại</th>
+                <th>Giá</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Albums)
+            {
+                <tr data-id="@item.ItemId">
+                    <td>@item.Name</td>
+                    <td>@string.Join(", ", item.Categories.Select(c => c.Name))</td>
+                    <td>@item.Price.ToString("N0") VNĐ</td>
+                    <td>
+                        <a class="btn btn-primary" onclick="onEdit(this);"><i class="fa fa-edit"></i></a>
+                        <a class="btn btn-danger" onclick="onDelete(this);"><i class="fa fa-trash"></i></a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+
+
+@* Code in the scripts section below gets added at the bottom of the HTML body element, below other scripts. This
+    section can be used to enter custom scripts specific to this page. *@
+@section scripts
+{
+    <script type="text/javascript" src="https://cdn.datatables.net/t/bs-3.3.6/dt-1.10.11/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
+    <script>
+        var categoryTable;
+
+        $(document).ready(function () {
+            categoryTable = $('#category-table').DataTable({
+                "order": [],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        text: '<i class="fa fa-plus"> Tạo mới',
+                        action: function (e, dt, node, config) {
+                            location.href = "/album/create";
+                        },
+                        className: 'btn btn-primary'
+                    }
+                ]
+            });
+        });
+
+        function onEdit(element) {
+            var itemId = $(element).closest('tr').data('id');
+            location.href = '/album/create/' + itemId;
+        }
+
+        function onDelete(element) {
+            var confirmed = confirm('Chắc chắn xóa album này?');
+
+            if (confirmed) {
+                var itemId = $(element).closest('tr').data('id');
+                $.ajax({
+                    url: '/album/delete/' + itemId,
+                    type: "POST",
+                    success: function () {
+                        location.href = '/album/list';
+                    }
+                });
+            }
+        }
+    </script>
+}

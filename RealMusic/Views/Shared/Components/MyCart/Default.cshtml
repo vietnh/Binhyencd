@@ -1,0 +1,50 @@
+﻿@model RealMusic.Dto.OrderDto
+
+@if (Model != null && Model.TotalPrice != 0)
+{
+    foreach (var item in Model.Items)
+    {
+        <div class="cart-entry">
+            <a class="image"><img src="@item.AlbumImagePath" alt="" height="70" style="height: 70px;" /></a>
+            <div class="content">
+                <a class="title">@item.AlbumName</a>
+                <div class="quantity">Số lượng: @item.Quantity</div>
+                <div class="price">@item.Price.ToString("N0") VNĐ</div>
+            </div>
+            <div class="button-x" onClick="removeFromCart('@item.AlbumId');">
+                <i class="fa fa-close"></i>
+            </div>
+        </div>
+    }
+    <div class="summary">
+        <div class="grandtotal">Tổng <span id="my-cart-total">@Model.TotalPrice.ToString("N0") VNĐ</span></div>
+    </div>
+            <div class="cart-buttons">
+                <div class="column"></div>
+                <div class="column pull-right">
+                    <a class="button style-4" href="@Url.RouteUrl(OrderControllerRoute.GetCheckout)">Đặt hàng</a>
+                    <div class="clear"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+}
+else
+{
+    <div class="block-header" style="padding-top: 0;">
+        <div class="description">Chưa có sản phẩm nào</div>
+    </div>
+}
+
+<script>
+    function removeFromCart(albumId) {
+        $.post('/order/removefromcart/' + albumId)
+        .done(function (result) {
+            $('#cart-popup').html(result);
+            $('#layout-my-cart-total').text($('#my-cart-total').text());
+        });
+    }
+
+    function checkout() {
+        location.href = "@Url.RouteUrl(OrderControllerRoute.GetCheckout)";
+    }
+</script>

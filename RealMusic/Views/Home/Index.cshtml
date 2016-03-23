@@ -1,0 +1,67 @@
+﻿@using System.Globalization
+@using System.Threading.Tasks
+@inject IOptions<AppSettings> AppSettings
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="sidebar-navigation">
+            @await Component.InvokeAsync("Sidebar", 0u)
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="col-md-9">
+        <div class="information-blocks">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="navigation-banner-swiper size-1">
+                        <div class="swiper-container" data-autoplay="5000" data-loop="1" data-speed="500" data-center="0" data-slides-per-view="1">
+                            <div class="swiper-wrapper">
+                                <div class="swiper-slide active" data-val="0">
+                                    <div class="navigation-banner-wrapper align-1" style="background-image: url(img/everything-1.jpg); background-color: #f5f1e2;">
+                                        <div class="navigation-banner-content">
+                                            <div class="cell-view">
+                                                <h2 class="subtitle">Nhận làm đĩa</h2>
+                                                <div class="description">Nhận làm các loại đĩa CD, VCD, DVD phim, ca nhạc tự chọn.</div>
+                                                <div class="info">
+                                                    <a class="button style-1" href="#">Đặt hàng</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                            <div class="pagination"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="information-blocks">
+            @await Component.InvokeAsync("AlbumTabs", 20)
+        </div>
+
+        @*<form asp-controller="Category" asp-action="Post" method="post" role="form">
+                <div asp-validation-summary="ValidationSummary.All" class="text-danger"></div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Create default categories" class="btn btn-default" />
+                    </div>
+                </div>
+            </form>*@
+
+        <div class="clear"></div>
+    </div>
+</div>
+
+
+@* Code in the scripts section below gets added at the bottom of the HTML body element, below other scripts. This
+    section can be used to enter custom scripts specific to this page. *@
+@section scripts
+{
+}

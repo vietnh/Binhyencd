@@ -1,0 +1,11 @@
+﻿@model RealMusic.Dto.CategoryInfoListDto
+
+
+<div class="title">Danh mục<i class="fa fa-angle-down"></i></div>
+<div class="list">
+    @foreach (var category in Model.Categories)
+    {
+        var active = category.ItemId == Model.SelectedItemId ? "active" : string.Empty;
+        <a class="entry @active" href="@Url.RouteUrl(ShopControllerRoute.GetIndex, new { id = category.ItemId })"><span><i class="fa fa-angle-right"></i>@category.Name</span></a>
+    }
+</div>

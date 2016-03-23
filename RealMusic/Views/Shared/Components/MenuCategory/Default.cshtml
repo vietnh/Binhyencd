@@ -1,0 +1,26 @@
+﻿@model RealMusic.Dto.MenuCategoryListDto
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="submenu-list-title"><a>Âm nhạc</a><span class="toggle-list-button"></span></div>
+        <ul class="list-type-1 toggle-list-container">
+            @foreach (var music in Model.Musics)
+            {
+                <li>
+                    <a href="@Url.RouteUrl(ShopControllerRoute.GetIndex, new { id = music.ItemId })"><i class="fa fa-angle-right"></i>@music.Name</a>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-lg-6">
+        <div class="submenu-list-title"><a>Phim ảnh</a><span class="toggle-list-button"></span></div>
+        <ul class="list-type-1 toggle-list-container">
+            @foreach (var music in Model.Films)
+            {
+                <li>
+                    <a href="@Url.RouteUrl(ShopControllerRoute.GetIndex, new { id = music.ItemId })"><i class="fa fa-angle-right"></i>@music.Name</a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

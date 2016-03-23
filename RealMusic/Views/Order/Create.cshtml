@@ -1,0 +1,115 @@
+﻿@model RealMusic.Dto.OrderDto
+
+<div class="breadcrumb-box">
+    <a href="@Url.RouteUrl(HomeControllerRoute.GetIndex)">Trang chủ</a>
+    <a>Đặt hàng</a>
+</div>
+
+<div class="information-blocks">
+    <div class="row">
+        <div class="col-sm-6 information-entry">
+            <h3 class="cart-column-title size-1">Thông tin của bạn</h3>
+            <div class="sidebar-subtotal">
+                <div class="additional-data">
+                    <form asp-controller="Order" asp-action="Create" method="post">
+                        <label>Địa chỉ<span>*</span></label>
+                        <input asp-for="Address" class="simple-field size-1" placeholder="Chúng tôi sẽ ship hàng tới đây" autofocus required />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                        <label>Số điện thoại<span>*</span></label>
+                        <input asp-for="Phone" class="simple-field size-1" placeholder="Chúng tôi sẽ dùng để liên hệ với bạn" required />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                        <label>Ghi chú (nếu có)</label>
+                        <textarea asp-for="Note" class="simple-field size-1"></textarea>
+
+                        @for (var i = 0; i < Model.Items.Count; i++)
+                        {
+                            <input type="hidden" name="Items[@i].AlbumId" value="@Model.Items[i].AlbumId" />
+                            <input type="hidden" name="Items[@i].Quantity" value="@Model.Items[i].Quantity" />
+                            <input type="hidden" name="Items[@i].Price" value="@Model.Items[i].Price" />
+                        }
+                        <input type="submit" class="button style-10" value="Đặt hàng" />
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 information-entry">
+            <h3 class="cart-column-title size-1">Tổng <span class="pull-right"><span id="total">@Model.TotalPrice.ToString("N0")</span> VNĐ</span></h3>
+            @for (var i = 0; i < Model.Items.Count; i++)
+            {
+                <div class="traditional-cart-entry style-1" style="padding-bottom: 0;">
+                    <a class="image" style="width: 160px;"><img alt="" src="@Model.Items[i].AlbumImagePath" height="160" style="height: 160px;"></a>
+                    <div class="content" style="margin-left: 180px;">
+                        <div class="cell-view">
+                            <a class="title">@Model.Items[i].AlbumName</a>
+                            <div class="price">
+                                <div class="current"><span id="price_@Model.Items[i].AlbumId">@Model.Items[i].Price.ToString("N0")</span> VNĐ</div>
+                            </div>
+                            <div class="quantity-selector detail-info-entry">
+                                <div class="detail-info-entry-title">Số lượng</div>
+                                <div class="entry number-minus" id="minus_@Model.Items[i].AlbumId" onclick="decreaseQuantity(@Model.Items[i].AlbumId, @i);">&nbsp;</div>
+                                <div class="entry number" id="quantity_@Model.Items[i].AlbumId">@Model.Items[i].Quantity</div>
+                                <div class="entry number-plus" id="plus_@Model.Items[i].AlbumId" onclick="increaseQuantity(@Model.Items[i].AlbumId, @i);">&nbsp;</div>
+                                @if (Model.Items.Count > 1)
+                                {
+                                    <a class="button style-17" onclick="removeFromCart('@Model.Items[i].AlbumId');">Xóa</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@* Code in the scripts section below gets added at the bottom of the HTML body element, below other scripts. This
+    section can be used to enter custom scripts specific to this page. *@
+@section scripts
+{
+    <script>
+        function replaceAll(s, stringToFind, stringToReplace) {
+            if (stringToFind === stringToReplace) return s;
+            for (let index = s.indexOf(stringToFind); index !== -1; index = s.indexOf(stringToFind))
+                s = s.replace(stringToFind, stringToReplace);
+            return s;
+        }
+
+        function decreaseQuantity(albumId, index) {
+            var quantity = $('#quantity_' + albumId).text();
+            if (+quantity > 1) {
+                var price = parseFloat(replaceAll($('#price_' + albumId).text(), '.', ''));
+                var total = parseFloat(replaceAll($('#total').text(), '.', ''));
+
+                var newQuantity = +quantity - 1;
+                total = total - price;
+                $('#quantity_' + albumId).text(newQuantity);
+                $('#total').text(total.toLocaleString('vi-VN', { minimumFractionDigits: 0 }));
+                $('[name="Items[' + index + '].Quantity"]').val(newQuantity);
+            }
+        }
+
+        function increaseQuantity(albumId, index) {
+            var quantity = $('#quantity_' + albumId).text();
+            var price = parseFloat(replaceAll($('#price_' + albumId).text(), '.', ''));
+            var total = parseFloat(replaceAll($('#total').text(), '.', ''));
+
+            var newQuantity = +quantity + 1;
+            total = total + price;
+            $('#quantity_' + albumId).text(newQuantity);
+            $('#total').text(total.toLocaleString('vi-VN', { minimumFractionDigits: 0 }));
+            $('[name="Items[' + index + '].Quantity"]').val(newQuantity);
+        }
+
+        function removeFromCart(albumId) {
+            $.post('/order/removefromcart/' + albumId)
+                .done(function () {
+                    location.href = "@Url.RouteUrl(OrderControllerRoute.GetCheckout)";
+                });
+        }
+
+        $(document).ready(function () {
+
+        });
+    </script>
+}

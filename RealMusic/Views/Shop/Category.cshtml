@@ -1,0 +1,26 @@
+﻿@model RealMusic.Dto.CategoryInfoDto
+
+<div class="breadcrumb-box">
+    <a href="@Url.RouteUrl(HomeControllerRoute.GetIndex)">Trang chủ</a>
+    <a>@Model.Name</a>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="sidebar-navigation" style="margin-top: 0;">
+            @await Component.InvokeAsync("Sidebar", Model.ItemId)
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="col-md-9">
+        @await Component.InvokeAsync("AlbumShopList", Model.ItemId, Model.Page)
+        <div class="clear"></div>
+    </div>
+</div>
+
+
+@* Code in the scripts section below gets added at the bottom of the HTML body element, below other scripts. This
+    section can be used to enter custom scripts specific to this page. *@
+@section scripts
+{
+}

@@ -1,0 +1,35 @@
+{
+  "AppSettings": {
+    "SiteShortTitle": "Real Music",
+    "SiteTitle": "Real Music"
+  },
+  "Logging": {
+    "IncludeScopes": true,
+    "LogLevel": {
+      "Default": "Verbose",
+      "System": "Information",
+      "Microsoft": "Information"
+    }
+  },
+  "SitemapSettings": {
+    "SitemapPingLocations": [
+      "https://www.google.com/ping?sitemap=",
+      "http://www.bing.com/ping?sitemap="
+    ]
+  },
+  "CacheProfileSettings": {
+    "CacheProfiles": {
+      "Error": {
+        "Duration": 86400,
+        "Location": "Any"
+      },
+      "RobotsText": {
+        "Duration": 86400,
+        "Location": "Any"
+      },
+      "SitemapNodes": {
+        "Duration": 86400
+      }
+    }
+  }
+}

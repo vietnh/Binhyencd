@@ -1,0 +1,69 @@
+﻿@model RealMusic.Dto.SearchResultDto
+
+<div class="page-selector">
+    <div class="pages-box hidden-xs">
+        @if (Model.Page > 1)
+        {
+            <a href="@Url.RouteUrl(AlbumControllerRoute.GetSearch, new { id = Model.Page, page = Model.Page - 1 })" class="square-button"><i class="fa fa-angle-left"></i></a>
+        }
+        <a class="square-button active">@Model.Page</a>
+        <a href="@Url.RouteUrl(AlbumControllerRoute.GetSearch, new { id = Model.Page, page = Model.Page + 1 })" class="square-button"><i class="fa fa-angle-right"></i></a>
+    </div>
+    <div class="shop-grid-controls">
+        <div class="entry">
+            <div class="view-button grid active"><i class="fa fa-th"></i></div>
+            <div class="view-button list"><i class="fa fa-list"></i></div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<div class="row shop-grid grid-view" style="display: block;">
+    @if (!Model.Items.Any())
+    {
+        <div class="text-center">Không có đĩa nào được tìm thấy</div>
+    }
+
+    @foreach (var album in Model.Items)
+    {
+        <div class="col-md-3 col-sm-4 shop-grid-item">
+            <div class="product-slide-entry shift-image">
+                <div class="product-image">
+                    <img src="@album.ImagePath" alt="" height="195" style="height: 195px;">
+                    <img src="@album.ImagePath" alt="" height="195" style="height: 195px;">
+                    <a class="top-line-a right open-product" data-id="product_@album.ItemId"><i class="fa fa-expand"></i> <span>Xem album</span></a>
+                    <div class="bottom-line">
+                        <a class="bottom-line-a" onClick="addToCart('@album.ItemId')"><i class="fa fa-shopping-cart"></i> Đặt hàng</a>
+                    </div>
+                </div>
+                <a class="tag">@string.Join(", ", album.Categories.Select(c => c.Name))</a>
+                <a class="title open-product" data-id="product_@album.ItemId">@album.Name</a>
+                <div class="article-container style-1">
+                    <p>@(string.IsNullOrEmpty(album.Description) ? "N/A" : album.Description)</p>
+                </div>
+                <div class="price">
+                    <div class="current">@album.Price.ToString("N0") VNĐ</div>
+                </div>
+                <div class="list-buttons">
+                    <a class="button style-10" onclick="createOrder('@album.ItemId')">Đặt hàng</a>
+                    <a class="button style-11" onClick="addToCart('@album.ItemId')"><i class="fa fa-shopping-cart"></i> Thêm vào giỏ</a>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    }
+</div>
+
+<script>
+    function createOrder(albumId) {
+        location.href = "/order/create/" + albumId + '/' + '1';
+    }
+
+    function addToCart(albumId) {
+        $.post('/order/addtocart/' + albumId + '/' + '1')
+            .done(function (result) {
+                $('#cart-popup').html(result);
+                $('#layout-my-cart-total').text($('#my-cart-total').text());
+            });
+    }
+</script>

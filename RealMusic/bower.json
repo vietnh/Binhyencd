@@ -1,0 +1,20 @@
+{
+  "name": "real-music",
+  "private": true,
+  "dependencies": {
+    "bootstrap-sass": "3.3.5",
+    "font-awesome": "4.4.0",
+    "jquery": "2.1.4",
+    "jquery-ui": "1.11.4",
+    "jquery-validation": "1.14.0",
+    "jquery-validation-unobtrusive": "3.2.2",
+    "jScrollPane": "2.0.22",
+    "jquery-mousewheel": "3.1.13",
+    "idangerous-swiper": "2.7.6",
+    "isotope": "2.1.1",
+    "mocha": "2.3.0",
+    "chai": "3.2.0",
+    "sinon": "1.16.1",
+    "modernizr": "2.8.3"
+  }
+}
